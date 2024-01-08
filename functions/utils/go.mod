@@ -1,4 +1,4 @@
-module blinders/functions/collecting
+module blinders/functions/utils
 
 go 1.21.3
 

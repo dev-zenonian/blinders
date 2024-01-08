@@ -34,22 +34,23 @@ func TestFirebaseSuccess(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, app)
 
-	authClient, err := app.Auth(ctx)
-	assert.Nil(t, err)
-	assert.NotNil(t, authClient)
+	// authClient, err := app.Auth(ctx)
+	// assert.Nil(t, err)
+	// assert.NotNil(t, authClient)
 
-	maker, err := NewFirebaseAuthManager(authClient)
+	maker, err := NewFirebaseAuthManager(app)
 	assert.Nil(t, err)
 	assert.NotNil(t, maker)
 
 	validUser := &common.User{
-		ID:    "t7ZYtyjYCbMxOefUALu8b2P4AVO2",
+		ID:    "RyuIyfR24uo9l8DCTGjS",
 		Email: "minhdat15012002@gmail.com",
+		UID:   "t7ZYtyjYCbMxOefUALu8b2P4AVO2",
 	}
 	validToken, err := GetUserIDToken(validUser)
-	// validToken, err := maker.Generate(validUser)
 	assert.Nil(t, err)
 	assert.NotEmpty(t, validToken)
+
 	u, err := maker.Verify(validToken)
 	assert.Nil(t, err)
 	assert.NotNil(t, u)
@@ -64,18 +65,17 @@ func TestFirebaseWithInvalidUser(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, app)
 
-	authClient, err := app.Auth(ctx)
-	assert.Nil(t, err)
-	assert.NotNil(t, authClient)
+	// authClient, err := app.Auth(ctx)
+	// assert.Nil(t, err)
+	// assert.NotNil(t, authClient)
 
-	maker, err := NewFirebaseAuthManager(authClient)
+	maker, err := NewFirebaseAuthManager(app)
 	assert.Nil(t, err)
 	assert.NotNil(t, maker)
 
 	invalidToken := "invalidTOken"
 	u, err := maker.Verify(invalidToken)
 
-	// validToken, err := maker.Generate(validUser)
 	assert.NotNil(t, err)
 	assert.Nil(t, u)
 }
@@ -86,11 +86,13 @@ func GetUserIDToken(user *common.User) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	client, err := app.Auth(ctx)
 	if err != nil {
 		return "", err
 	}
-	tokenString, err := client.CustomToken(ctx, user.ID)
+
+	tokenString, err := client.CustomToken(ctx, user.UID)
 	if err != nil {
 		return "", err
 	}
